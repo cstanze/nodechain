@@ -9,9 +9,9 @@ export default class Block {
    hash: string
    data: any
    validator: string
-   signature: eddsa.Signature
+   signature: eddsa.Signature | string
 
-  constructor(stamp: number, previousHash: string, hash: string, data: any, validator: string, signature: eddsa.Signature) {
+  constructor(stamp: number, previousHash: string, hash: string, data: any, validator: string, signature: eddsa.Signature | string) {
     this.timestamp = stamp
     this.previousHash = previousHash
     this.hash = hash
@@ -21,7 +21,7 @@ export default class Block {
   }
 
   static genesis(): Block {
-    return new this(0, ``, `0`, [], 'genesis', new eddsa.Signature(new eddsa('ed25519'), 'genesis'))
+    return new this(0, ``, `0`, [], 'genesis', 'genesis')
   }
 
   static hash(timestamp: number, previousHash: string, data: any): string {

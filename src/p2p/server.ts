@@ -70,7 +70,6 @@ export default class P2PServer {
       this.sockets = this.sockets.filter(sock => socket != sock)
 
       this.peers = this.peers.filter(peer => peer.socket != socket.url)
-      this.peers[this.peers.indexOf(this.peers.find(pr => pr.socket == socket.url) as unknown as Peer)].connected = false
       this.syncPeers()
     })
   }
@@ -111,7 +110,7 @@ export default class P2PServer {
             console.log(`Recieved peer list is not longer than the current peer list`)
             break
           }
-          console.log(`Recieved peer list from synced peer (${sock.url}), replacing peer list`)
+          console.log(`Recieved peer list from synced peer (${sock.url || 'sock.url is undefined'}), replacing peer list`)
           this.peers = [...data.peers, sock.url]
           break
       }

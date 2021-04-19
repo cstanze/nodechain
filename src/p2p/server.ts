@@ -110,7 +110,7 @@ export default class P2PServer {
             console.log(`Recieved peer list is not longer than the current peer list`)
             break
           }
-          console.log(`Recieved peer list from synced peer (${sock.url || 'sock.url is undefined'}), replacing peer list`)
+          console.log(`Recieved peer list from synced peer (${sock.url || 'server client'}), replacing peer list`)
           this.peers = [...data.peers, sock.url]
           break
       }

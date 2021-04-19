@@ -46,6 +46,10 @@ export default class P2PServer {
 
   connectSocket(sock: WebSocket) {
     this.sockets.push(sock)
+    this.peers.push({
+      socket: sock.url,
+      connected: false
+    })
     console.log(`Socket connected: ${sock.url}`)
     this.messageHandler(sock)
     this.closeHandler(sock)

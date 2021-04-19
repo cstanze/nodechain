@@ -34,13 +34,13 @@ app.post('/transact', (req, res) => {
   res.redirect('/transactions')
 })
 
-app.post('/mine', (req, res) => {
-  const block = blockchain.addBlock(req.body.data)
-  console.log(`New block added: ${block.toString()}`)
+// app.post('/mine', (req, res) => {
+//   const block = blockchain.addBlock(req.body.data)
+//   console.log(`New block added: ${block.toString()}`)
 
-  res.redirect('/blocks')
-  p2p.syncChain()
-})
+//   res.redirect('/blocks')
+//   p2p.syncChain()
+// })
 
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`)

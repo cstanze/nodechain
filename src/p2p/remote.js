@@ -3,5 +3,5 @@ export const getRemoteSocket = (sock, port = '5001') => {
 }
 
 export const getRemoteSocketClosed = (sock) => {
-  return `ws://${sock._peername.address}`
+  return `ws://${sock._socket._peername.address.replace('::ffff:')}`
 }

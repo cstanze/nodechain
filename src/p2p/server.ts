@@ -108,10 +108,11 @@ export default class P2PServer {
           break
         case MessageType.peerSync:
           this.peers = [...data.peers, sock.url].filter(peer => peer != undefined).map(url => ({ socket: url, connected: this.peers.map(peer => peer.socket).includes(url) }))
-          this.peers.push({
-            socket: getRemoteSocket(sock),
-            connected: true
-          })
+          if(!sock.url)
+            this.peers.push({
+              socket: getRemoteSocket(sock),
+              connected: true
+            })
           console.log(`Recieved peer list from synced peer (${sock.url || 'server client'}), replacing peer list`, this.peers)
           break
       }

@@ -154,7 +154,6 @@ export default class P2PServer {
       type: MessageType.peerSync,
       peers: [...new Set(this.peers.map(peer => peer.socket).filter(peer => peer != sock.url))],
       p2p: {
-        // addr: 
         port: P2P_PORT
       }
     }))

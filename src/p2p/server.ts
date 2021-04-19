@@ -5,7 +5,7 @@ import Blockchain from '../blockchain/blockchain'
 import TransactionPool from '../wallet/pool'
 import Transaction from '../wallet/transaction'
 import Wallet from '../wallet/wallet'
-import { getRemoteSocket } from './remote'
+import { getRemoteSocket, getRemoteSocketClosed } from './remote'
 
 const PEERS: string[] = process.env.PEERS ? process.env.PEERS.split(',') : []
 const P2P_PORT = process.env.P2P_PORT as unknown as number || 5001
@@ -69,11 +69,10 @@ export default class P2PServer {
 
   closeHandler(sock: WebSocket) {
     sock.on('close', (socket: WebSocket) => {
-      console.log(`Closed socket connection to peer`)
-      console.log(inspect(sock, true, Infinity, true))
+      console.log(`Closed socket connection to peer: ${getRemoteSocketClosed(sock)}:<port_unknown>`)
 
       this.sockets = this.sockets.filter(sock => socket != sock)
-      this.peers = this.peers.filter(peer => peer.socket != '')
+      this.peers = this.peers.filter(peer => !peer.socket.includes(getRemoteSocketClosed(sock)))
       this.syncPeers()
     })
   }

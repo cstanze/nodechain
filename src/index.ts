@@ -34,6 +34,10 @@ app.post('/transact', (req, res) => {
   res.redirect('/transactions')
 })
 
+app.get('/public-key', (req, res) => {
+  res.json({ key: wallet.publicKey })
+})
+
 app.get('/balance', (req, res) => {
   res.json({ balance: blockchain.getBalance(wallet.publicKey) })
 })

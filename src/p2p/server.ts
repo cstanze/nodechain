@@ -5,7 +5,7 @@ import TransactionPool from '../wallet/pool'
 import Transaction from '../wallet/transaction'
 import Wallet from '../wallet/wallet'
 
-const PEERS: string[] = process.env.PEERS ? process.env.PEERS as unknown as string[] : []
+const PEERS: string[] = process.env.PEERS ? process.env.PEERS.split(',') : []
 const P2P_PORT = process.env.P2P_PORT as unknown as number || 5001
 const MessageType = {
   chain: `CHAIN`,

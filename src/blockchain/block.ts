@@ -66,6 +66,13 @@ export default class Block {
     return Block.hash(timestamp, previousHash, data)
   }
 
+  prepareStringify() {
+    return {
+      ...this,
+      signature: typeof this.signature == 'string' ? this.signature : this.signature.toHex()
+    }
+  }
+
   toString(): string {
     return `Block -
       Timestamp: ${this.timestamp}

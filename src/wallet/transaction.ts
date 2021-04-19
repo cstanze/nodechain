@@ -67,4 +67,13 @@ export default class Transaction {
       ChainUtil.hash(transaction.output)
     )
   }
+
+  prepareStringify() {
+    return {
+      ...this,
+      input: {
+        signature: this.input?.signature.toHex()
+      }
+    }
+  }
 }

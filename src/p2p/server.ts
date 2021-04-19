@@ -116,6 +116,8 @@ export default class P2PServer {
               connected: true
             })
           console.log(`Recieved peer list from synced peer (${sock.url || 'server client'}), replacing peer list`, this.peers)
+          console.log(`Reconnecting to peers`)
+          this.connectToPeers()
           break
       }
     })
@@ -137,13 +139,13 @@ export default class P2PServer {
 
   broadcastTransaction(transaction: Transaction) {
     this.sockets.forEach(socket => {
-      this.sendTransaction(socket, transaction)
+      this.sendTransaction(socket, transaction.prepareStringify())
     })
   }
 
   broadcastBlock(block: Block) {
     this.sockets.forEach(socket => {
-      this.sendBlock(socket, block)
+      this.sendBlock(socket, block.prepareStringify())
     })
   }
 
@@ -161,21 +163,21 @@ export default class P2PServer {
   sendChain(sock: WebSocket) {
     sock.send(JSON.stringify({
       type: MessageType.chain,
-      chain: this.blockchain.chain
+      chain: this.blockchain.chain.map(block => block.prepareStringify())
     }))
   }
 
   sendBlock(socket: WebSocket, block: Block) {
     socket.send(JSON.stringify({
       type: MessageType.block,
-      block
+      block: block.prepareStringify()
     }))
   }
 
   sendTransaction(socket: WebSocket, transaction: Transaction) {
     socket.send(JSON.stringify({
       type: MessageType.transaction,
-      transaction
+      transaction: transaction.prepareStringify()
     }))
   }
 }

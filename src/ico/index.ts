@@ -24,7 +24,7 @@ app.get('/ico/blocks', (req, res) => {
   res.json(blockchain.chain)
 })
 
-app.get('/ico/transact', (req, res) => {
+app.post('/ico/transact', (req, res) => {
   const { to, amount, type } = req.body
   const transaction = wallet.createTransaction(
     to,

@@ -110,10 +110,6 @@ export default class P2PServer {
           }
           break
         case MessageType.peerSync:
-          if(this.peers.length > (data.peers + 1)) {
-            console.log(`Recieved peer list is not longer than the current peer list`)
-            break
-          }
           this.peers = [...data.peers, sock.url].filter(peer => peer != undefined)
           console.log(`Recieved peer list from synced peer (${sock.url || 'server client'}), replacing peer list`, this.peers)
           break

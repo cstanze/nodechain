@@ -1,4 +1,3 @@
-import { inspect } from 'util'
 import WebSocket from 'ws'
 import Block from '../blockchain/block'
 import Blockchain from '../blockchain/blockchain'
@@ -57,7 +56,7 @@ export default class P2PServer {
 
   connectToPeers() {
     this.peers.forEach(peer => {
-      if(!peer.connected) {
+      if(!peer.connected || peer.socket.includes('127.0.0.') || peer.socket.includes('localhost')) {
         const socket = new WebSocket(peer.socket)
         socket.on('open', () => {
           this.peers[this.peers.indexOf(this.peers.find(pr => pr.socket == socket.url) as unknown as Peer)].connected = true

@@ -34,6 +34,10 @@ app.post('/transact', (req, res) => {
   res.redirect('/transactions')
 })
 
+app.get('/balance', (req, res) => {
+  res.json({ balance: blockchain.getBalance(wallet.publicKey) })
+})
+
 // app.post('/mine', (req, res) => {
 //   const block = blockchain.addBlock(req.body.data)
 //   console.log(`New block added: ${block.toString()}`)
@@ -43,7 +47,7 @@ app.post('/transact', (req, res) => {
 // })
 
 app.listen(PORT, () => {
-  console.log(`listening on port ${PORT}`)
+  console.log(`Listening on port ${PORT}`)
 })
 
 p2p.listen()

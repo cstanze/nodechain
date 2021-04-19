@@ -4,6 +4,7 @@ import Blockchain from '../blockchain/blockchain'
 import TransactionPool from '../wallet/pool'
 import Transaction from '../wallet/transaction'
 import Wallet from '../wallet/wallet'
+import { getRemoteSocket } from './remote'
 
 const PEERS: string[] = process.env.PEERS ? process.env.PEERS.split(',') : []
 const P2P_PORT = process.env.P2P_PORT as unknown as number || 5001
@@ -107,13 +108,10 @@ export default class P2PServer {
           break
         case MessageType.peerSync:
           this.peers = [...data.peers, sock.url].filter(peer => peer != undefined).map(url => ({ socket: url, connected: this.peers.map(peer => peer.socket).includes(url) }))
-          if(!sock.url)
-            this.peers.push(
-              {
-                socket: Array.from(this.server?.clients as Set<WebSocket>).find(client => client == sock)?.url as string,
-                connected: true
-              }
-            )
+          this.peers.push({
+            socket: getRemoteSocket(sock),
+            connected: true
+          })
           console.log(`Recieved peer list from synced peer (${sock.url || 'server client'}), replacing peer list`, this.peers)
           break
       }

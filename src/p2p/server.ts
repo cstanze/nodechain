@@ -69,10 +69,11 @@ export default class P2PServer {
 
   closeHandler(sock: WebSocket) {
     sock.on('close', (socket: WebSocket) => {
-      console.log(`Closed socket connection to peer: ${getRemoteSocketClosed(sock)}:<port_unknown>`)
+      let remoteSock = getRemoteSocketClosed(sock)
+      console.log(`Closed socket connection to peer: ${remoteSock.url}${remoteSock.hasUrl ? '' : ':<port_unknown>'}`)
 
       this.sockets = this.sockets.filter(sock => socket != sock)
-      this.peers = this.peers.filter(peer => !peer.socket.includes(getRemoteSocketClosed(sock)))
+      this.peers = this.peers.filter(peer => !peer.socket.includes(remoteSock.url))
       this.syncPeers()
     })
   }

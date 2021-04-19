@@ -4,7 +4,13 @@ export const getRemoteSocket = (sock, port = '5001') => {
 
 export const getRemoteSocketClosed = (sock) => {
   if(sock._isServer || sock._socket._peername)
-    return `ws://${sock._socket._peername.address.replace('::ffff:')}`
+    return {
+      url: `ws://${sock._socket._peername.address.replace('::ffff:')}`,
+      hasUrl: false
+    }
   else
-    return sock._url
+    return {
+      url: sock._url,
+      hasUrl: true
+    }
 }

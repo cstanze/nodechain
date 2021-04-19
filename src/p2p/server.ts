@@ -1,3 +1,4 @@
+import { inspect } from 'util'
 import WebSocket from 'ws'
 import Block from '../blockchain/block'
 import Blockchain from '../blockchain/blockchain'
@@ -68,10 +69,11 @@ export default class P2PServer {
 
   closeHandler(sock: WebSocket) {
     sock.on('close', (socket: WebSocket) => {
-      console.log(`Closed connection to socket: ${getRemoteSocket(socket, `<port_unknown>`)}`)
+      console.log(`Closed socket connection to peer`)
+      console.log(inspect(sock, true, Infinity, true))
 
       this.sockets = this.sockets.filter(sock => socket != sock)
-      this.peers = this.peers.filter(peer => peer.socket != getRemoteSocket(socket))
+      this.peers = this.peers.filter(peer => peer.socket != '')
       this.syncPeers()
     })
   }

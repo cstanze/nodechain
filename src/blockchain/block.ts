@@ -1,4 +1,3 @@
-import { SHA256 } from "crypto-js"
 import { eddsa } from "elliptic"
 import ChainUtil from "../util/chain"
 import Wallet from "../wallet/wallet"
@@ -53,7 +52,7 @@ export default class Block {
   static verifyBlock(block: Block) {
     return ChainUtil.verifySignature(
       block.validator,
-      block.signature,
+      block.signature as eddsa.Signature,
       Block.hash(block.timestamp, block.previousHash, block.data)
     )
   }

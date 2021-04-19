@@ -6,29 +6,38 @@ import Transaction from '../wallet/transaction'
 import Wallet from '../wallet/wallet'
 
 const P2P_PORT = process.env.P2P_PORT as unknown as number || 5001
-const peers: string[] = process.env.PEERS ? process.env.PEERS.split(',') : []
 const MessageType = {
   chain: `CHAIN`,
   transaction: `TRANSACTION`,
-  block: `BLOCK`
+  block: `BLOCK`,
+  peerSync: `PEER_SYNC`
+}
+
+interface Peer {
+  socket: string,
+  connected: boolean
 }
 
 export default class P2PServer {
   blockchain: Blockchain
   sockets: WebSocket[]
+  peers: Peer[]
   transactionPool: TransactionPool
   wallet: Wallet
+  server: WebSocket.Server | null
 
   constructor(blockchain: Blockchain, transactionPool: TransactionPool, wallet: Wallet) {
     this.blockchain = blockchain
     this.sockets = []
+    this.peers = []
     this.transactionPool = transactionPool
     this.wallet = wallet
+    this.server = null
   }
 
   listen() {
-    const server = new WebSocket.Server({ port: P2P_PORT })
-    server.on('connection', sock => this.connectSocket(sock))
+    this.server = new WebSocket.Server({ port: P2P_PORT })
+    this.server.on('connection', sock => this.connectSocket(sock))
     this.connectToPeers()
     
     console.log(`Listening for peer connection on port: ${P2P_PORT}`)
@@ -40,18 +49,28 @@ export default class P2PServer {
     this.messageHandler(sock)
     this.closeHandler(sock)
     this.sendChain(sock)
+    this.syncPeers()
   }
 
   connectToPeers() {
-    peers.forEach(peer => {
-      const socket = new WebSocket(peer)
-      socket.on('open', () => this.connectSocket(socket))
+    this.peers.forEach(peer => {
+      if(!peer.connected) {
+        const socket = new WebSocket(peer.socket)
+        socket.on('open', () => {
+          this.peers[this.peers.indexOf(this.peers.find(pr => pr.socket == socket.url) as unknown as Peer)].connected = true
+          this.connectSocket(socket)
+        })
+      }
     })
   }
 
   closeHandler(sock: WebSocket) {
     sock.on('close', (socket: WebSocket) => {
       this.sockets = this.sockets.filter(sock => socket != sock)
+
+      this.peers = this.peers.filter(peer => peer.socket != socket.url)
+      this.peers[this.peers.indexOf(this.peers.find(pr => pr.socket == socket.url) as unknown as Peer)].connected = false
+      this.syncPeers()
     })
   }
 
@@ -86,20 +105,23 @@ export default class P2PServer {
             this.broadcastBlock(data.block)
           }
           break
+        case MessageType.peerSync:
+          break
       }
     })
   }
 
-  sendChain(sock: WebSocket) {
-    sock.send(JSON.stringify({
-      type: MessageType.chain,
-      chain: this.blockchain.chain
-    }))
-  }
+  
 
   syncChain() {
     this.sockets.forEach(sock => {
       this.sendChain(sock)
+    })
+  }
+
+  syncPeers() {
+    this.sockets.forEach(sock => {
+      this.sendPeers(sock)
     })
   }
 
@@ -113,6 +135,20 @@ export default class P2PServer {
     this.sockets.forEach(socket => {
       this.sendBlock(socket, block)
     })
+  }
+
+  sendPeers(sock: WebSocket) {
+    sock.send(JSON.stringify({
+      type: MessageType.peerSync,
+      peers: [...new Set(this.peers.map(peer => peer.socket).filter(peer => peer != sock.url))]
+    }))
+  }
+  
+  sendChain(sock: WebSocket) {
+    sock.send(JSON.stringify({
+      type: MessageType.chain,
+      chain: this.blockchain.chain
+    }))
   }
 
   sendBlock(socket: WebSocket, block: Block) {

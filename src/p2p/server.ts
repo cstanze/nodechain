@@ -46,10 +46,6 @@ export default class P2PServer {
 
   connectSocket(sock: WebSocket) {
     this.sockets.push(sock)
-    this.peers.push({
-      socket: sock.url,
-      connected: false
-    })
     console.log(`Socket connected: ${sock.url}`)
     this.messageHandler(sock)
     this.closeHandler(sock)
@@ -110,7 +106,7 @@ export default class P2PServer {
           }
           break
         case MessageType.peerSync:
-          this.peers = [...new Set([...this.peers, ...data.peers, sock.url].filter(peer => peer != undefined))]
+          this.peers = [...data.peers, sock.url].filter(peer => peer != undefined)
           console.log(`Recieved peer list from synced peer (${sock.url || 'server client'}), replacing peer list`, this.peers)
           break
       }

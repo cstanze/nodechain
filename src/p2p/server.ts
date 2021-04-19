@@ -110,7 +110,7 @@ export default class P2PServer {
           this.peers = [...data.peers, sock.url].filter(peer => peer != undefined).map(url => ({ socket: url, connected: this.peers.map(peer => peer.socket).includes(url) }))
           if(!sock.url)
             this.peers.push({
-              socket: getRemoteSocket(sock),
+              socket: getRemoteSocket(sock, data.p2p.port),
               connected: true
             })
           console.log(`Recieved peer list from synced peer (${sock.url || 'server client'}), replacing peer list`, this.peers)
@@ -148,7 +148,11 @@ export default class P2PServer {
   sendPeers(sock: WebSocket) {
     sock.send(JSON.stringify({
       type: MessageType.peerSync,
-      peers: [...new Set(this.peers.map(peer => peer.socket).filter(peer => peer != sock.url))]
+      peers: [...new Set(this.peers.map(peer => peer.socket).filter(peer => peer != sock.url))],
+      p2p: {
+        // addr: 
+        port: P2P_PORT
+      }
     }))
   }
   

@@ -1,3 +1,3 @@
-export const getRemoteSocket = sock => {
-  return `ws://${sock._socket.remoteAddress}:5001`
+export const getRemoteSocket = (sock, port = 5001) => {
+  return `ws://${sock._socket.remoteAddress.replace('::ffff:', '')}:${port}`
 }
